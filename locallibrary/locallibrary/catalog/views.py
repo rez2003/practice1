@@ -1,3 +1,4 @@
+import self as self
 from django.shortcuts import render
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,12 +42,16 @@ class BookDetailView(generic.DetailView):
 class BookListView(generic.ListView):
     model = Book
     paginate_by = 10
+
+
 class AuthorListView(generic.ListView):
-    model=Author
+    model = Author
     paginate_by = 2
+
 
 class AuthorDetailView(generic.DetailView):
     model = Author
+
 
 class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     model = BookInstance
@@ -54,9 +59,7 @@ class LoanedBooksByUserListView(LoginRequiredMixin, generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return
-        BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
-
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
 
 
 @permission_required('catalog.can_mark_returned')
@@ -71,20 +74,27 @@ def renew_book_librarian(request, pk):
     else:
         proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
         form = RenewBookForm(initial={'renewal_date':
-proposed_renewal_date, })
+                                          proposed_renewal_date, })
     return render(request, 'catalog/book_renew_librarian.html',
-{'form': form, 'bookinst': book_inst})
+                  {'form': form, 'bookinst': book_inst})
 
-from django.views.generic.edit import CreateView, UpdateView,DeleteView
+
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Author
+
+
 class AuthorCreate(CreateView):
-        model = Author
-        fields = '__all__'
-        initial={'date_of_death':'12/10/2016',}
+    model = Author
+    fields = '__all__'
+    initial = {'date_of_death': '12/10/2016', }
+
+
 class AuthorUpdate(UpdateView):
     model = Author
-    fields = ['first_name','last_name','date_of_birth','date_of_death']
+    fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
+
+
 class AuthorDelete(DeleteView):
     model = Author
     success_url = reverse_lazy('authors')
